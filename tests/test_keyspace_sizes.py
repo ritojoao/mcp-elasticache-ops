@@ -162,3 +162,12 @@ def test_keyspace_sizes_threshold_below_one_is_clamped_not_an_error():
 def test_keyspace_sizes_empty_keyspace_reports_nothing():
     out = _sample(FakeRedis(infos={"memory": _info()}, data={}), include_sizes=True)
     assert out["collections"]["prefixes"] == []
+
+
+def test_keyspace_sample_notes_a_partial_sample_and_stays_quiet_on_a_full_scan():
+    r = FakeRedis(infos={"memory": _info()}, data=_data())
+    full = dataplane.keyspace_sample(r, sample_size=1000)
+    assert full["complete_scan"] is True and "sampling_note" not in full
+    cut = dataplane.keyspace_sample(FakeRedis(infos={"memory": _info()}, data=_data()), sample_size=3)
+    assert cut["complete_scan"] is False
+    assert "sampled 3 of" in cut["sampling_note"] and "include_sizes" in cut["sampling_note"]

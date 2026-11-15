@@ -488,6 +488,11 @@ def keyspace_sample(
             (x for x in rows if x["type"] != "string"), key=lambda x: x["length"] or 0, reverse=True
         )[:top],
     }
+    if not result["complete_scan"] and dbsize and rows:
+        result["sampling_note"] = (
+            f"sampled {len(rows)} of {dbsize} keys ({100 * len(rows) / dbsize:.0f}%): rare big keys can be missed. "
+            "Raise sample_size, narrow with match, or set include_sizes=true to rank large collections."
+        )
     if access is not None:
         result["access"] = {**access, "partial": partial}
     if sizes is not None:

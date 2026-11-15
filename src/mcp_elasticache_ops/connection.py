@@ -117,6 +117,9 @@ def _is_private(address: str) -> bool:
         return False
 
 
+PLAINTEXT_PROBE_SECONDS = 1.5
+
+
 def _tls_context(cfg: DataPlaneConfig, verify: bool) -> ssl.SSLContext:
     if verify and cfg.tls_verify:
         ctx = ssl.create_default_context(cafile=cfg.tls_ca_file)
@@ -249,9 +252,11 @@ def diagnose_connectivity(cfg: DataPlaneConfig) -> dict:
             return finish()
         record("tls", started, True, f"handshake ok ({version})")
     else:
+        # A plaintext port never answers a ClientHello, so the handshake would wait for the full timeout.
+        probe_timeout = min(timeout, PLAINTEXT_PROBE_SECONDS)
         try:
             with (
-                socket.create_connection((host, port), timeout=timeout) as raw,
+                socket.create_connection((host, port), timeout=probe_timeout) as raw,
                 _tls_context(cfg, verify=False).wrap_socket(raw, server_hostname=host),
             ):
                 pass

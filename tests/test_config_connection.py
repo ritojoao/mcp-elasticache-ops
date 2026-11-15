@@ -557,3 +557,17 @@ def test_plaintext_probe(monkeypatch):
 
     monkeypatch.setattr(socket, "create_connection", boom)
     assert connection._plaintext_answers("h", 1, 1) is False
+
+
+def test_connectivity_plaintext_probe_uses_a_short_timeout(monkeypatch):
+    _net(monkeypatch, tls_error=PLAIN)
+    seen = []
+    real = socket.create_connection
+
+    def spy(addr, timeout=None):
+        seen.append(timeout)
+        return real(addr, timeout=timeout)
+
+    monkeypatch.setattr(socket, "create_connection", spy)
+    connection.diagnose_connectivity(_cfg(tls=False, socket_timeout=10.0))
+    assert connection.PLAINTEXT_PROBE_SECONDS in seen
