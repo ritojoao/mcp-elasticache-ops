@@ -82,7 +82,7 @@ Audit the security posture of my replication groups: encryption, auth, subnet gr
 ## Quick start
 
 ```bash
-uvx --from git+https://github.com/ritojoao/mcp-elasticache-ops mcp-elasticache-ops
+uvx --from git+https://github.com/ritojoao/mcp-elasticache-ops@v0.3.0 mcp-elasticache-ops
 ```
 
 Claude Desktop / Claude Code:
@@ -92,7 +92,7 @@ Claude Desktop / Claude Code:
   "mcpServers": {
     "elasticache-ops": {
       "command": "uvx",
-      "args": ["--from", "git+https://github.com/ritojoao/mcp-elasticache-ops", "mcp-elasticache-ops"],
+      "args": ["--from", "git+https://github.com/ritojoao/mcp-elasticache-ops@v0.3.0", "mcp-elasticache-ops"],
       "env": {
         "ELASTICACHE_HOST": "my-rg.xxxxxx.ng.0001.use1.cache.amazonaws.com",
         "ELASTICACHE_TLS": "true",
