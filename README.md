@@ -365,7 +365,7 @@ and commit the result. The `lint` job runs the same script and fails on `git dif
 
 ## More
 
-[SECURITY.md](SECURITY.md) explains the read-only guarantee; [CHANGELOG.md](CHANGELOG.md) lists changes.
+[SECURITY.md](SECURITY.md) explains the read-only guarantee; [CHANGELOG.md](CHANGELOG.md) lists changes; [docs/best-practices.md](docs/best-practices.md) maps AWS guidance to the checks.
 
 ## License
 
