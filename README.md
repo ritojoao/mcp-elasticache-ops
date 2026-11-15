@@ -69,7 +69,8 @@ Audit the security posture of my replication groups: encryption, auth, subnet gr
 - It cannot fix anything. It diagnoses; you or your automation apply the change.
 - It never reads key values, so it cannot answer "what is stored under this key".
 - Big-key and hot-key results come from bounded `SCAN` sampling, not an exhaustive pass.
-- The server must reach the cache endpoint (same VPC, VPN or tunnel). ElastiCache has no public data plane.
+- The server must reach the cache endpoint (same VPC, VPN or tunnel). ElastiCache has no public data plane. See
+  [Reaching a private cache](#reaching-a-private-cache).
 
 ## What it looks like
 
@@ -78,6 +79,24 @@ Audit the security posture of my replication groups: encryption, auth, subnet gr
 > **Assistant:** (calls `aws_triage`, `node_triage`, `node_commandstats`) Evictions started at 14:02 on shard 2
 > after `maxmemory` was reached. Policy is `allkeys-lru` and one hash prefix holds most of the sampled memory.
 > A maintenance event also touched the replica at 13:55. Next step: raise the node type or set a TTL on that prefix.
+
+## Reaching a private cache
+
+Run from your laptop, the data plane tools need a path into the VPC. The control plane tools (`aws_*`) only need AWS
+credentials and work without it. Two options:
+
+1. **Run the server inside the VPC** (EC2, ECS or a bastion) and point your client at it over `--transport http`.
+2. **Open a tunnel from your machine.** With SSM Session Manager, no inbound port or key pair is needed:
+
+```bash
+aws ssm start-session --target i-0123456789abcdef0 \
+  --document-name AWS-StartPortForwardingSessionToRemoteHost \
+  --parameters '{"host":["my-rg.xxxxxx.ng.0001.use1.cache.amazonaws.com"],"portNumber":["6379"],"localPortNumber":["16379"]}'
+```
+
+Then set `ELASTICACHE_HOST=127.0.0.1` and `ELASTICACHE_PORT=16379`. With in-transit encryption the certificate names the
+real endpoint, not `127.0.0.1`, so also set `ELASTICACHE_TLS_CHECK_HOSTNAME=false`. This keeps certificate validation and
+skips only the hostname match. Run `node_connectivity` first: it tells DNS, TCP, TLS and AUTH failures apart.
 
 ## Quick start
 
