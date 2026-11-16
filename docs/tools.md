@@ -1,6 +1,6 @@
 # Tools
 
-All 65 tools are annotated `readOnlyHint=true`, `destructiveHint=false`.
+All 66 tools are annotated `readOnlyHint=true`, `destructiveHint=false`.
 
 **Data plane** (redis-py, talks to the node endpoint)
 
@@ -23,6 +23,7 @@ All 65 tools are annotated `readOnlyHint=true`, `destructiveHint=false`.
 | `node_commandlog` | Valkey 8 `COMMANDLOG` (`slow`, `large-request`, `large-reply`): findings first for oversized payloads SLOWLOG misses (warning from 1 MiB, critical from 16 MiB), top commands and client addresses per type. Arguments and values are never returned. Redis and Valkey before 8.0 get a note naming the engine. Also part of `node_doctor` |
 | `node_latency_events` | `LATENCY LATEST` plus `LATENCY HISTORY` for the top 3 events (bounded samples), trimmed `LATENCY DOCTOR` / `MEMORY DOCTOR` text. Findings: fork or aof-fsync events over 100 ms, an expire-cycle spike, and an actionable finding when `latency-monitor-threshold` is 0 and nothing is recorded |
 | `node_commandstats` | Commands ranked by total CPU time (`INFO commandstats`) |
+| `node_key_info` | Metadata of one key, never its value: `TYPE`, `PTTL`, `OBJECT ENCODING`, `MEMORY USAGE`, element count, `OBJECT IDLETIME` or `FREQ`; for a stream also `XINFO GROUPS` (consumers, pending, lag). Findings for big keys, large collections and groups with pending entries but no consumer |
 | `node_keyspace_sample` | Bounded `SCAN` sample: big keys by bytes and by element count, hot keys (LFU) or coldest keys, TTL coverage, `ttl_histogram` (no TTL, < 1m, < 1h, < 1d, >= 1d; overall, per prefix and per type, from the same sample so no extra round trips) with `keyspace_hit_rate` from the one `INFO` reply, and `prefixes` (keys grouped by normalised prefix such as `user:*:cart`, with estimated bytes scaled to dbsize, % without TTL; large no-TTL prefixes are flagged under `noeviction` or memory pressure; `top_prefixes`, default 10, max 50). `include_access=true` (default off) adds an `access` summary from the sampled `OBJECT FREQ` (LFU policies) or `OBJECT IDLETIME` replies: cold keys, share idle over 7 days, an eviction-risk hint under memory pressure; capped and time-budgeted. `include_sizes=true` (default off) adds a `collections` block: key prefixes whose lists, sets, hashes, zsets or streams exceed `size_threshold` elements (default 10000), from the same sample with the type-specific length command only, prefixes never full keys, flagged as unbounded-growth candidates. Stops at `max_seconds` (default 10, hard cap 60) and returns `partial=true` |
 | `node_replication` | Role, replicas with byte lag, link status, backlog; findings for lagging or link-down replicas, offset gap vs the primary, `replica-read-only`, `min-replicas-to-write`, `cluster-allow-reads-when-down`. Engine-version quirks (no `CLUSTER SHARDS` before 7.0, ...) come back as `notes`, not errors |
 | `node_cluster` | Cluster mode: `CLUSTER INFO`, slots per primary, `CLUSTER SHARDS` |

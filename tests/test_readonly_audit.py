@@ -47,6 +47,7 @@ AUDITED_MODULES = {
     "dataplane/fanout.py",
     "dataplane/hot_slots.py",
     "dataplane/health.py",
+    "dataplane/key_info.py",
     "dataplane/keyspace.py",
     "dataplane/memory_breakdown.py",
     "dataplane/replication.py",

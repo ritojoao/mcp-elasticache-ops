@@ -1,5 +1,19 @@
 # Changelog
 
+## Round 49
+
+Round 49. Tool count 65 to 66.
+
+### Added
+- `node_key_info`: metadata of one key, never its value. Type, TTL, encoding, bytes, element count, idle seconds or
+  LFU counter, and for a stream the consumer groups (consumers, pending, lag). Findings for big keys, large
+  collections and groups with pending entries but no consumer.
+- `XINFO GROUPS` joins the read-only allowlist, one key per call. `XINFO STREAM` (returns the first and last entry
+  with their values), `XINFO CONSUMERS` and `XINFO HELP` stay refused.
+- `.github/workflows/ci.yml` job `latest-deps`: weekly canary that resolves the newest dependencies, ignoring
+  `uv.lock`, and runs the tests and mypy.
+- `docs/best-practices.md`: AWS guidance mapped to the checks, with the gaps.
+
 ## Round 48
 
 Round 48. Tool count unchanged.

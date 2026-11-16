@@ -1599,6 +1599,20 @@
   },
   "type": "object"
  },
+ "node_key_info": {
+  "additionalProperties": false,
+  "properties": {
+   "key": {
+    "maxLength": 1024,
+    "minLength": 1,
+    "type": "string"
+   }
+  },
+  "required": [
+   "key"
+  ],
+  "type": "object"
+ },
  "node_keyspace_sample": {
   "additionalProperties": false,
   "properties": {

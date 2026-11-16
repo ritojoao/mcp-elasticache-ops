@@ -133,6 +133,12 @@ def node_commandstats(top: Annotated[int, Field(ge=1, le=500)] = 20) -> dict:
 
 
 @server.read_tool
+def node_key_info(key: Annotated[str, Field(min_length=1, max_length=1024)]) -> dict:
+    """One key, no value: type, TTL, encoding, bytes, length, idle or LFU, stream groups (pending, lag). Findings."""
+    return server.dataplane.key_info(server.redis_client(), key)
+
+
+@server.read_tool
 def node_keyspace_sample(
     sample_size: Annotated[int, Field(ge=1, le=100_000, description="Max keys to inspect")] = 1000,
     match: Annotated[str | None, Field(description="SCAN MATCH glob, e.g. 'session:*'")] = None,

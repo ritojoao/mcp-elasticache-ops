@@ -27,6 +27,7 @@ _CONTAINERS = {
     "OBJECT",
     "PUBSUB",
     "SLOWLOG",
+    "XINFO",
 }
 
 READ_ONLY_COMMANDS: frozenset[str] = frozenset(
@@ -89,6 +90,9 @@ READ_ONLY_COMMANDS: frozenset[str] = frozenset(
         "ZCARD",
         "XLEN",
         "PFCOUNT",
+        # consumer-group state of one stream: group names, consumer and pending counts, lag. XINFO STREAM and
+        # XINFO CONSUMERS stay refused: STREAM returns the first and last entry with their field values.
+        "XINFO GROUPS",
     }
 )
 
@@ -394,7 +398,7 @@ def check(args: tuple) -> None:
         _check_latency_histogram(rest)
     elif name == "PUBSUB":
         _check_pubsub(sub, rest)
-    elif key.startswith("OBJECT "):
+    elif key.startswith("OBJECT ") or key == "XINFO GROUPS":
         _check_single_key(key, rest)
 
 
@@ -413,6 +417,7 @@ FORBIDDEN_COMMANDS: frozenset[str] = frozenset(
         "ACL SETUSER", "ACL DELUSER", "ACL LOG RESET",
         "COMMANDLOG", "COMMANDLOG RESET", "COMMANDLOG HELP", "MONITOR", "SUBSCRIBE", "PSUBSCRIBE", "SSUBSCRIBE",
                 "PUBLISH", "PUBSUB", "PUBSUB HELP", "PUBSUB SHARDNUMSUB", "XREAD", "XREADGROUP",
+        "XINFO", "XINFO STREAM", "XINFO CONSUMERS", "XINFO HELP",
         "XRANGE", "MULTI", "EXEC", "WATCH", "SHUTDOWN", "SLAVEOF", "REPLICAOF", "FAILOVER", "SAVE", "BGSAVE",
         "BGREWRITEAOF", "SLOWLOG RESET", "CLUSTER FAILOVER", "CLUSTER RESET", "MIGRATE", "RESTORE", "DUMP",
         "MODULE LOAD", "SYNC", "PSYNC", "SORT", "OBJECT HELP", "MEMORY PURGE", "LATENCY RESET", "AUTH", "HELLO",

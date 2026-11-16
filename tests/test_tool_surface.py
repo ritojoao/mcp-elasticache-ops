@@ -12,9 +12,8 @@ from pathlib import Path
 from mcp_elasticache_ops import server
 
 SNAPSHOT = Path(__file__).with_name("tool_schemas.json")
-MAX_TOOLS_LIST_BYTES = (
-    55_000  # 65 tools in round 41 (54_734 with aws_global_datastore_failover_readiness); 64 tools in round 28 (54_000)
-)
+# 66 tools in round 49 (55_253 with node_key_info); 65 in round 41 (54_734); 64 in round 28 (54_000)
+MAX_TOOLS_LIST_BYTES = 55_500
 
 
 async def _dumped() -> list[dict]:

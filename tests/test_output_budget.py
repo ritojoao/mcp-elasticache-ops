@@ -82,6 +82,7 @@ TOOL_ARGS: dict[str, dict[str, Any]] = {
         ],
         _NO_ARGS,
     ),
+    "node_key_info": {"key": "user:1"},
     "memcached_discovery": {"cache_cluster_id": "mc-1"},
     "aws_parameters": {"parameter_group": "pg-1"},
     "aws_reserved_offerings": {"node_type": "cache.m7g.large", "engine": "valkey"},

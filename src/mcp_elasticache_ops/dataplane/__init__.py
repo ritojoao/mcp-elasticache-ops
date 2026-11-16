@@ -180,6 +180,12 @@ from .hot_slots import (  # noqa: F401
     SHARD_HOT_RATIO,
     cluster_hot_slots,
 )
+from .key_info import (  # noqa: F401
+    BIG_KEY_BYTES,
+    MAX_GROUPS,
+    STREAM_LAG_WARN,
+    key_info,
+)
 from .keyspace import (  # noqa: F401
     _HEX_ID,
     _KEY_SEPARATORS,
