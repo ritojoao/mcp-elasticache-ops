@@ -95,6 +95,37 @@ jobs:
       - name: Skip count is not above the recorded ceiling (tests/skip_budget.txt)
         run: uv run python -I scripts/check-skip-budget.py junit.xml
 
+  latest-deps:
+    # canary: the lockfile pins dependencies, but `uvx --from git+` users resolve the newest ones.
+    # Runs weekly and on dispatch only, so a new upstream release (for example an MCP SDK major) shows up here
+    # before users hit it. A failure means "look at the new release", not "the commit is bad".
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    services:
+      redis:
+        image: valkey/valkey:8-alpine
+        ports: ["6379:6379"]
+        options: >-
+          --health-cmd "valkey-cli ping"
+          --health-interval 2s --health-timeout 2s --health-retries 15
+    env:
+      REDIS_TEST_URL: redis://localhost:6379/0
+      AWS_EC2_METADATA_DISABLED: "true"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
+        with:
+          python-version: "3.13"
+      - name: Resolve the newest allowed dependencies (ignores uv.lock)
+        run: uv sync --upgrade
+      - name: Show what resolved
+        run: uv pip list | grep -iE '^(mcp|fastmcp|redis|boto3|botocore|pydantic) '
+        shell: bash
+      - run: uv run --no-sync pytest -q -rs
+      - run: uv run --no-sync mypy src
+
   cluster:
     # always on push, schedule and dispatch; on a pull request only with the `integration` label
     if: >-
